@@ -41,7 +41,7 @@ def main():
     soup = BeautifulSoup(html_content, 'html.parser')
     links = soup.findAll('a')
 
-    logger.info(msg='done; time: {x:.3f}'.format(x=(now() - time_start).seconds))
+    logger.info(msg='done; time: {:0.3f}'.format((now() - time_start).seconds))
 
 
 if __name__ == '__main__':
