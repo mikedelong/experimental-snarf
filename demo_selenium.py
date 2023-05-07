@@ -19,6 +19,7 @@ ARGUMENTS = [
     '--remote-debugging-port=9222',
     '--test-type'
 ]
+BINARY_LOCATION = '/usr/bin/chromium-browser'
 EXECUTABLE_PATH = '/usr/bin/chromedriver'
 URL = 'https://www.google.com/'
 basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=INFO)
@@ -32,7 +33,7 @@ def main():
     options = webdriver.ChromeOptions()
     for argument in ARGUMENTS:
         options.add_argument(argument=argument)
-    options.binary_location = '/usr/bin/chromium-browser'
+    options.binary_location = BINARY_LOCATION
 
     driver = webdriver.Chrome(executable_path=EXECUTABLE_PATH, options=options)
     driver.get(url=URL)
