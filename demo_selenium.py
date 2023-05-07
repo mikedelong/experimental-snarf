@@ -9,6 +9,7 @@ from logging import getLogger
 from arrow import now
 from selenium import webdriver
 import chromedriver_autoinstaller
+from selenium.webdriver.chrome.options import Options
 
 ARGUMENTS = [
     '--disable-extensions',
@@ -23,26 +24,17 @@ basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=INFO)
 logger = getLogger(__name__)
 
 
-
-# chromedriver_autoinstaller.install()  # Check if the current version of chromedriver exists
-                                      # and if it doesn't exist, download it automatically,
-                                      # then add chromedriver to path
-
-
 def main():
     time_start = now()
     logger.info(msg='started')
 
     options = webdriver.ChromeOptions()
-    for argument in ARGUMENTS:
-        options.add_argument(argument=argument)
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--test-type')
+    options.binary_location = '/usr/bin/chromium-browser'
 
-    options.binary_location = r'/snap/bin/chromium'
-    chrome_driver_path = r'/usr/bin/chromedriver'
-
-    driver = webdriver.Chrome(chrome_driver_path, options=options)
-    driver.get(url=URL, )
-    logger.info(msg=driver.page_source[:40])
+    driver = webdriver.Chrome(executable_path='/usr/bin/chromedriver', options=options)
+    driver.get('https://python.org')
 
     logger.info(msg='done; time: {:0.3f}'.format((now() - time_start).seconds))
 
