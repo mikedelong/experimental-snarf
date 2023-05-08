@@ -41,7 +41,6 @@ def main():
     result = driver.page_source
     logger.info(msg='result length: {}'.format(len(result)))
 
-
     logger.info(msg='done; time: {:0.3f}'.format((now() - time_start).seconds))
 
 
