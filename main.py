@@ -13,22 +13,22 @@ from os.path import exists
 from arrow import now
 from bs4 import BeautifulSoup
 from requests import get
-
 from selenium import webdriver
-
 
 basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=INFO)
 logger = getLogger(__name__)
 
 ARGUMENTS = [
-    '--disable-extensions',
-    '--disable-infobars',
-    '--disable-dev-shm-usage',
-    '--disable-browser-side-navigation',
+    # '--disable-extensions',
+    # '--disable-infobars',
+    # '--disable-dev-shm-usage',
+    # '--disable-browser-side-navigation',
+    '--enable-cookies',
+    '--enable-javascript',
     '--ignore-certificate-errors',
-    '--no-sandbox',
-    '--remote-debugging-port=9222',
-    '--test-type'
+    # '--no-sandbox',
+    # '--remote-debugging-port=9222',
+    # '--test-type'
 ]
 BINARY_LOCATION = '/usr/bin/chromium-browser'
 DOWNLOADS_FOLDER = './downloads/'
@@ -73,17 +73,17 @@ def main():
     for argument in ARGUMENTS:
         options.add_argument(argument=argument)
     options.binary_location = BINARY_LOCATION
-    options.headless = True
+    # options.headless = True
 
-    driver = webdriver.Chrome(executable_path=EXECUTABLE_PATH, options=options)
-    driver.get(url=url,)
+    with webdriver.Chrome(executable_path=EXECUTABLE_PATH, options=options) as driver:
+        driver.get(url=url,)
     page_source = driver.page_source
     logger.info(msg='page source length: {}'.format(len(page_source)))
+    logger.info(msg='done; time: {:0.3f}'.format((now() - time_start).seconds))
     return page_source
 
     # images(url=url, folder=DOWNLOADS_FOLDER)
 
-    logger.info(msg='done; time: {:0.3f}'.format((now() - time_start).seconds))
 
 
 if __name__ == '__main__':
