@@ -18,19 +18,7 @@ from selenium import webdriver
 basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=INFO)
 logger = getLogger(__name__)
 
-ARGUMENTS = [
-    # '--disable-extensions',
-    # '--disable-infobars',
-    # '--disable-dev-shm-usage',
-    # '--disable-browser-side-navigation',
-    '--enable-cookies',
-    '--enable-javascript',
-    '--ignore-certificate-errors',
-    # '--no-sandbox',
-    # '--remote-debugging-port=9222',
-    # '--test-type'
-]
-BINARY_LOCATION = '/usr/bin/chromium-browser'
+ARGUMENTS = ['--enable-cookies', '--enable-javascript', ]
 DOWNLOADS_FOLDER = './downloads/'
 EXECUTABLE_PATH = '/usr/bin/chromedriver'
 HTML_FOLDER = './html/'
@@ -41,16 +29,15 @@ SETTINGS_FILE = './main.json'
 
 
 def images(url: str, folder: str):
-    response = get(url=url,)
-    soup = BeautifulSoup(markup=response.content, features='html.parser',)
-    tags = soup.findAll(name='img',)
+    response = get(url=url, )
+    soup = BeautifulSoup(markup=response.content, features='html.parser', )
+    tags = soup.findAll(name='img', )
     for tag in tags:
         image_url = tag.get('src')
-        image_response = get(url=image_url,)
+        image_response = get(url=image_url, )
         image_filename = basename(image_url)
         with open(file=folder + image_filename, mode=MODE_WRITE_BINARY) as output_fp:
             output_fp.write(image_response.content)
-
 
 
 def main():
@@ -72,18 +59,16 @@ def main():
     options = webdriver.ChromeOptions()
     for argument in ARGUMENTS:
         options.add_argument(argument=argument)
-    options.binary_location = BINARY_LOCATION
-    # options.headless = True
+    options.headless = False
 
-    with webdriver.Chrome(executable_path=EXECUTABLE_PATH, options=options) as driver:
-        driver.get(url=url,)
-    page_source = driver.page_source
+    with webdriver.Chrome(options=options) as driver:
+        driver.get(url=url, )
+        page_source = driver.page_source
+        driver.implicitly_wait(0)
+    driver.quit()
     logger.info(msg='page source length: {}'.format(len(page_source)))
     logger.info(msg='done; time: {:0.3f}'.format((now() - time_start).seconds))
     return page_source
-
-    # images(url=url, folder=DOWNLOADS_FOLDER)
-
 
 
 if __name__ == '__main__':
