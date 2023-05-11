@@ -22,12 +22,14 @@ HTML_FOLDER = './html/'
 MODE_READ = 'r'
 MODE_WRITE = 'w'
 MODE_WRITE_BINARY = 'wb'
+SAVE = {}
 SETTINGS_FILE = './main.json'
 
 
 def get_image_links(html: str) -> list:
     soup = BeautifulSoup(markup=html, features='html.parser',)
     images = soup.find_all('img')
+    SAVE['images'] = images
     result = []
     for image in images:
         if 'src' in image.find_next(name='src'):
@@ -60,14 +62,15 @@ def main():
         page_source = driver.page_source
         driver.implicitly_wait(0)
     driver.quit()
+    SAVE['page_source'] = page_source
     logger.info(msg='page source length: {}'.format(len(page_source)))
     image_links = get_image_links(html=page_source)
     logger.info(msg='done; time: {:0.3f}'.format((now() - time_start).seconds))
-    return image_links
+    SAVE['image_links'] = image_links
 
 
 if __name__ == '__main__':
     try:
-        t = main()
+        main()
     except Exception as exception:
         logger.error(exc_info=True, msg='error:')
