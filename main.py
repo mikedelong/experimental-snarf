@@ -7,12 +7,10 @@ from logging import INFO
 from logging import basicConfig
 from logging import getLogger
 from os import makedirs
-from os.path import basename
 from os.path import exists
 
 from arrow import now
 from bs4 import BeautifulSoup
-from requests import get
 from selenium import webdriver
 
 basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=INFO)
@@ -20,7 +18,6 @@ logger = getLogger(__name__)
 
 ARGUMENTS = ['--enable-cookies', '--enable-javascript', ]
 DOWNLOADS_FOLDER = './downloads/'
-EXECUTABLE_PATH = '/usr/bin/chromedriver'
 HTML_FOLDER = './html/'
 MODE_READ = 'r'
 MODE_WRITE = 'w'
@@ -28,17 +25,14 @@ MODE_WRITE_BINARY = 'wb'
 SETTINGS_FILE = './main.json'
 
 
-def images(url: str, folder: str):
-    response = get(url=url, )
-    soup = BeautifulSoup(markup=response.content, features='html.parser', )
-    tags = soup.findAll(name='img', )
-    for tag in tags:
-        image_url = tag.get('src')
-        image_response = get(url=image_url, )
-        image_filename = basename(image_url)
-        with open(file=folder + image_filename, mode=MODE_WRITE_BINARY) as output_fp:
-            output_fp.write(image_response.content)
-
+def get_image_links(html: str) -> list:
+    soup = BeautifulSoup(markup=html, features='html.parser',)
+    images = soup.find_all('img')
+    result = []
+    for image in images:
+        if 'src' in image.find_next(name='src'):
+            result.append(image['src'])
+    return result
 
 def main():
     time_start = now()
@@ -67,8 +61,9 @@ def main():
         driver.implicitly_wait(0)
     driver.quit()
     logger.info(msg='page source length: {}'.format(len(page_source)))
+    image_links = get_image_links(html=page_source)
     logger.info(msg='done; time: {:0.3f}'.format((now() - time_start).seconds))
-    return page_source
+    return image_links
 
 
 if __name__ == '__main__':
